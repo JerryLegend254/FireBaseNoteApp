@@ -12,7 +12,7 @@ const ChooseCategory = ({navigation}) => {
 
   return (
     <SafeAreaView>
-      <View className="m-4 border p-2 rounded-lg">
+      <View className="m-4 border p-2 rounded-lg mt-10">
         <Text className="self-center text-2xl font-bold">
           Choose Category of the Note
         </Text>
