@@ -6,71 +6,76 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import Categories from "../../assets/model/categoryData";
+// import Categories from "../../assets/model/categoryData";
 import CategoryInfo from "./CategoryInfo";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import CategoriesNotes from "../../assets/model/CategoryNotesMock";
-import { collection, db, getDocs, query, where } from "./firebase/index";
+import { collection, db, getDocs, onSnapshot } from "../../firebase/index";
 import uuid from "react-native-uuid";
-
-
+import { orderBy } from "firebase/firestore";
 
 const HomeScreen = ({ navigation }) => {
-  const [categories, setCategories] = useState([]);
-  const [allNotes, setAllNotes] = useState([]);
-  const [personalNotes, setPersonalNotes] = useState([]);
-  const [workNotes, setWorkNotes] = useState([]);
-  const [ideasNotes, setIdeasNotes] = useState([]);
-  const [listsNotes, setListsNotes] = useState([]);
-  let pCount = 0,
-    wCount = 0,
-    iCount = 0,
-    lCount = 0;
-  // const mappings = {
-  //   Personal: pCount,
-  //   Work: wCount,
-  //   Ideas: iCount,
-  //   Lists: lCount,
-  // };
+  const [pNotes, setPNotes] = useState([]);
+  const [wNotes, setWNotes] = useState([]);
+  const [iNotes, setINotes] = useState([]);
+  const [lNotes, setLNotes] = useState([]);
+  const allNotes = [...pNotes, ...wNotes, ...iNotes, ...lNotes];
 
-  const getCategoryInfo = async () => {
+  const getPNotes = () => {
     try {
-      // const q = query(
-      //   collection(db, "shopping"),
-      //   where("category", "==", `Personal`)
-      // );
 
-      const querySnapshot = await getDocs(collection(db, "shopping"));
-      setAllNotes(
-        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      );
+        const unsub = onSnapshot(collection(db, "Personal"), (querySnapshot) => {
+        setPNotes(
+          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+      });
     } catch (e) {
       console.log("Error", e);
     }
   };
-  useEffect(() => {
-    getCategoryInfo();
-    allNotes.map((n) => {
-      const { category } = n;
-      switch (category) {
-        case "Personal":
-          pCount++;
-          console.log(pCount);
-          break;
-        case "Work":
-          wCount++;
-          break;
-        case "Ideas":
-          iCount++;
-          break;
-        case "Lists":
-          lCount++;
-          break;
-      }
-    });
-  }, []);
 
+  const getWNotes = () => {
+    try {
+      const unsub = onSnapshot(collection(db, "Work"), (querySnapshot) => {
+        setWNotes(
+          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+      });
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
+  const getINotes = () => {
+    try {
+      const unsub = onSnapshot(collection(db, "Ideas"), (querySnapshot) => {
+        setINotes(
+          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+      });
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+
+  const getLNotes = async () => {
+    try {
+      const unsub = onSnapshot(collection(db, "Lists"), (querySnapshot) => {
+        setLNotes(
+          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+      });
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
+  const getAllNotes = () => {
+    getPNotes();
+    getWNotes();
+    getINotes();
+    getLNotes();
+  };
   const setify = (ar) => {
     let setCat = new Set();
     ar.map((n) => setCat.add(n.category));
@@ -78,74 +83,94 @@ const HomeScreen = ({ navigation }) => {
     return setArr;
   };
 
-  const coverter = (ar, mapper) => {
-    const arrayData = []
-    ar.map((c, i) => {c; 
-      console.log(mapper[c])
-      // arrayData.push({ title: c, noOfItems: mapper[c], id: i })
-    });
-    return arrayData
-  }
-  // const countValues = (array, c) => {
-  //   let count = 0;
-  //   array.forEach(({ category }) => {
-  //     if (category === c) count++;
-  //   });
-  //   return {() => {setCategories([...categories, { title: c, noOfItems: count, id: uuid.v4() }])
-  // }
-  // }
-  // countValues(allNotes, "Personal")
-  // countValues(allNotes, "Lists")
-  // console.log(arr)
-  // const setted = setify(allNotes);
+  useEffect(() => {
+    getAllNotes();
+  }, []);
+  const allCategories = setify(allNotes);
+  const mapping = {
+    Personal: pNotes.length,
+    Work: wNotes.length,
+    Ideas: iNotes.length,
+    Lists: lNotes.length,
+  };
 
-  // const CategoriesWithNotes = coverter(setted, mappings);
-  console.log(Categories)
-  // console.log(allNotes)
+  const transform = (arr) => {
+    const tranformedArr = arr.map((c, i) => ({
+      id: i,
+      title: c,
+      noOfItems: mapping[c],
+    }));
+    return tranformedArr;
+  };
+
+  const Categories = transform(allCategories);
+
   return (
-    <SafeAreaView>
-      <View className="flex-0.1 flex-row justify-center mt-20">
-        <Text className="text-red-500 text-7xl font-bold">My </Text>
-        <Text className="text-blue-800 text-7xl font-bold">Notes</Text>
-      </View>
-      <View className="my-24">
-        <FlatList
-          data={Categories}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                const categoryNotes = CategoriesNotes[item.title];
-                navigation.navigate("CategoryNotes", {
-                  title: item.title,
-                  noOfNotes: item.noOfItems,
-                  notes: categoryNotes,
-                });
-              }}
-            >
-              <CategoryInfo title={item.title} noOfNotes={item.noOfItems} />
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
-      <View>
-        <Text>No of things: {pCount}</Text>
-      </View>
-      <View className="flex-row justify-between items-center mx-8">
-        <TouchableOpacity>
-          <View className="items-center">
-            <Entypo name="menu" size={60} color="indigo" />
-            <Text className="text-red-500 text-lg">Menu</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("ChooseCategory")}>
-          <AntDesign name="pluscircle" size={90} color="red" />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    <View className="flex-1">
+      <SafeAreaView>
+        <View className="flex-row justify-center mt-20">
+          <Text className="text-red-500 text-7xl font-bold">My </Text>
+          <Text className="text-blue-800 text-7xl font-bold">Notes</Text>
+        </View>
+        <View className="my-28">
+          <FlatList
+            data={Categories}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  let categoryNotes;
+                  //   const categoryNotes = CategoriesNotes[item.title];
+                  //   navigation.navigate("CategoryNotes", {
+                  //     title: item.title,
+                  //     noOfNotes: item.noOfItems,
+                  //     notes: categoryNotes,
+                  //   });
+                  // }
+                  const { title, noOfItems } = item;
+
+                  switch (title) {
+                    case "Personal":
+                      categoryNotes = pNotes;
+                      break;
+                    case "Work":
+                      categoryNotes = wNotes;
+                      break;
+                    case "Ideas":
+                      categoryNotes = iNotes;
+                      break;
+                    case "Lists":
+                      categoryNotes = lNotes;
+                      break;
+                  }
+                  navigation.navigate("CategoryNotes", {
+                    title,
+                    noOfNotes: noOfItems,
+                    notes: categoryNotes,
+                  });
+                }}
+              >
+                <CategoryInfo title={item.title} noOfNotes={item.noOfItems} />
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        </View>
+        <View className="place-self-end flex-row justify-between items-center mx-8">
+          <TouchableOpacity>
+            <View className="items-center">
+              <Entypo name="menu" size={60} color="indigo" />
+              <Text className="text-red-500 text-lg">Menu</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChooseCategory")}
+          >
+            <AntDesign name="pluscircle" size={90} color="red" />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 export default HomeScreen;
-
-// const CategoriesWithNotes = setify(allNotes);

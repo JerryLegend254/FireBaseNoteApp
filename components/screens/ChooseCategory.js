@@ -7,7 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const mappedCategories = Categories.map(c => (<RadioButton.Item label={c.title} value={c.title} key={c.id} />))
-const ChooseCategory = ({navigation}) => {
+const ChooseCategory = ({ navigation }) => {
     const [value, setValue] = useState("Lists");
 
   return (
@@ -23,7 +23,7 @@ const ChooseCategory = ({navigation}) => {
           {mappedCategories}
         </RadioButton.Group>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate("CreateNote", {category: value})}>
+      <TouchableOpacity onPress={() => navigation.navigate("CreateNote", {category: value })}>
         <Button className="border bg-red-500 mx-4 p-4">CHOOSE</Button>
         </TouchableOpacity>
     </SafeAreaView>

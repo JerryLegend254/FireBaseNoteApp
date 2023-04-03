@@ -1,83 +1,86 @@
-import { View, Text, SafeAreaView, FlatList } from 'react-native'
+import { View, Text, SafeAreaView, FlatList, TouchableOpacity } from "react-native";
 import { Button, Card, Title, Paragraph } from "react-native-paper";
-import React from 'react'
+import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 
+const formatTime = (hr, min) => {
+  return `${hr < 10 ? `0${hr}` : hr}:${min < 10 ? `0${min}` : min}`;
+};
 const CategoryNotes = ({ navigation, route }) => {
   const { title, noOfNotes, notes } = route.params;
-  const CategoryNotes = notes.notes;
-  
 
- const dummyData = [
-   {
-     time: "Today at 13:21",
-     content:
-       "Remind Andy about Halifax files. Make sure they get sent by tonight",
-   },
-   {
-     time: "Today at 10:05",
-     content: "Send email to John regarding project deadline",
-   },
-   {
-     time: "Yesterday at 15:30",
-     content: "Attend meeting with marketing team",
-   },
-   {
-     time: "Monday at 09:00",
-     content: "Submit report to HR department",
-   },
-   {
-     time: "Last week at 14:10",
-     content: "Complete online training course",
-   },
-   {
-     time: "Today at 16:45",
-     content: "Schedule meeting with new client",
-   },
-   {
-     time: "Yesterday at 11:20",
-     content: "Review and approve design mockups",
-   },
-   {
-     time: "Last Wednesday at 13:00",
-     content: "Attend company-wide town hall meeting",
-   },
-   {
-     time: "Today at 12:00",
-     content: "Discuss project updates with team members",
-   },
-   {
-     time: "Last Friday at 17:00",
-     content: "Finish coding new feature for website",
-   },
- ];
+  const modifiedNotes = notes.map((n) => {
+    const { createdAt } = n;
+    let ems = createdAt.seconds * 1000;
+    let currentDate = new Date(ems);
+    let dateString = currentDate.toDateString();
+    let hours = currentDate.getHours();
+    let minutes = currentDate.getMinutes();
+    let formattedTime = formatTime(hours, minutes);
+
+    let time = `${formattedTime} on ${dateString}`;
+    return {
+      id: n.id,
+      note: n.note,
+      title: n.title,
+      time,
+      category: n.category,
+    };
+  });
 
   return (
-    <SafeAreaView className="bg-white">
-      <View className="items-center flex-row  justify-between mx-10">
-        <Text className="text-red-500 text-7xl font-bold">{title}</Text>
-        <Text className="text-red-500 text-6xl font-bold">{noOfNotes}</Text>
-      </View>
-      <View>
-        <FlatList
-          data={CategoryNotes}
-          renderItem={({ item }) => (
-            <Card className="m-5 bg-white">
-              <Card.Content>
-                <Title className="text-red-500">{item.time}</Title>
-                <Paragraph className="text-2xl font-bold">{item.title}</Paragraph>
-                <Paragraph className="text-xl font-semibold">{item.content}</Paragraph>
-              </Card.Content>
-              <Card.Actions>
-                <Button onPress={() => {
-                  navigation.navigate("SingleNote", {content: item.content, time: item.time, title: item.title})
-                }}>View Note....</Button>
-              </Card.Actions>
-            </Card>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+    <View className="flex-1 bg-white">
+      <SafeAreaView>
+        <TouchableOpacity onPress={() => navigation.pop(1)}>
+          <View className="flex-start flex-row items-center">
+            <Ionicons name="chevron-back" size={35} color="blue" />
+            <Text className="text-blue-700 text-xl font-semibold">
+              My notes
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <View className="items-center flex-row  justify-between mx-10 my-16">
+          <Text className="text-red-500 text-7xl font-bold">{title}</Text>
+          <Text className="text-red-500 text-6xl font-bold">{noOfNotes}</Text>
+        </View>
+        <View className="bg-white">
+          <FlatList
+            data={modifiedNotes}
+            renderItem={({ item }) => (
+              <Card className="m-5 shadow-2xl bg-white">
+                <Card.Content>
+                  <Title className="text-red-500">{item.time}</Title>
+                  <Paragraph className="text-2xl font-bold">
+                    {item.title}
+                  </Paragraph>
+                  <Paragraph className="text-xl font-semibold">
+                    {item.note}
+                  </Paragraph>
+                </Card.Content>
+                <Card.Actions>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("SingleNote", {
+                        id: item.id,
+                        content: item.note,
+                        title: item.title,
+                        time: item.time,
+                        category: item.category,
+                      });
+                    }}
+                  >
+                    <Text className="text-red-500 text-lg font-semibold m-3">
+                      View note...
+                    </Text>
+                  </TouchableOpacity>
+                </Card.Actions>
+              </Card>
+            )}
+          />
+        </View>
+      </SafeAreaView>
+    </View>
   );
-}
+};
 
-export default CategoryNotes
+export default CategoryNotes;
