@@ -6,6 +6,7 @@ import CategoryNotes from '../components/screens/CategoryNotes';
 import SingleNoteView from '../components/screens/SingleNoteView';
 import CreateNote from '../components/screens/CreateNote';
 import ChooseCategory from '../components/screens/ChooseCategory';
+import LogInScreen from '../components/screens/LogInScreen';
 
 
 const Stack = createStackNavigator();
@@ -13,6 +14,7 @@ const Home = () => <View><Text>Home</Text></View>
 const StackNavigator = () => {
  return (
    <Stack.Navigator screenOptions={{ headerShown: false }}>
+     <Stack.Screen name="LogInScreen" component={LogInScreen} />
      <Stack.Screen name="HomeScreen" component={HomeScreen} />
      <Stack.Screen name="CategoryNotes" component={CategoryNotes} />
      <Stack.Screen name="SingleNote" component={SingleNoteView} />

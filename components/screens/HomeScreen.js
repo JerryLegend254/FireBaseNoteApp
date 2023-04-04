@@ -5,31 +5,45 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  Modal,
+  Pressable,
 } from "react-native";
 // import Categories from "../../assets/model/categoryData";
 import CategoryInfo from "./CategoryInfo";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import CategoriesNotes from "../../assets/model/CategoryNotesMock";
-import { collection, db, getDocs, onSnapshot } from "../../firebase/index";
+import {
+  auth,
+  collection,
+  db,
+  onSnapshot,
+  query,
+  where,
+  signOut,
+} from "../../firebase/index";
 import uuid from "react-native-uuid";
-import { orderBy } from "firebase/firestore";
 
 const HomeScreen = ({ navigation }) => {
   const [pNotes, setPNotes] = useState([]);
   const [wNotes, setWNotes] = useState([]);
   const [iNotes, setINotes] = useState([]);
   const [lNotes, setLNotes] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
   const allNotes = [...pNotes, ...wNotes, ...iNotes, ...lNotes];
 
   const getPNotes = () => {
     try {
-
-        const unsub = onSnapshot(collection(db, "Personal"), (querySnapshot) => {
-        setPNotes(
-          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-        );
-      });
+      const unsub = onSnapshot(
+        query(
+          collection(db, "Personal"),
+          where("userId", "==", auth.currentUser.uid)
+        ),
+        (querySnapshot) => {
+          setPNotes(
+            querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          );
+        }
+      );
     } catch (e) {
       console.log("Error", e);
     }
@@ -37,11 +51,17 @@ const HomeScreen = ({ navigation }) => {
 
   const getWNotes = () => {
     try {
-      const unsub = onSnapshot(collection(db, "Work"), (querySnapshot) => {
-        setWNotes(
-          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-        );
-      });
+      const unsub = onSnapshot(
+        query(
+          collection(db, "Work"),
+          where("userId", "==", auth.currentUser.uid)
+        ),
+        (querySnapshot) => {
+          setWNotes(
+            querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          );
+        }
+      );
     } catch (e) {
       console.log("Error", e);
     }
@@ -49,11 +69,17 @@ const HomeScreen = ({ navigation }) => {
 
   const getINotes = () => {
     try {
-      const unsub = onSnapshot(collection(db, "Ideas"), (querySnapshot) => {
-        setINotes(
-          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-        );
-      });
+      const unsub = onSnapshot(
+        query(
+          collection(db, "Ideas"),
+          where("userId", "==", auth.currentUser.uid)
+        ),
+        (querySnapshot) => {
+          setINotes(
+            querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          );
+        }
+      );
     } catch (e) {
       console.log("Error", e);
     }
@@ -61,11 +87,17 @@ const HomeScreen = ({ navigation }) => {
 
   const getLNotes = async () => {
     try {
-      const unsub = onSnapshot(collection(db, "Lists"), (querySnapshot) => {
-        setLNotes(
-          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-        );
-      });
+      const unsub = onSnapshot(
+        query(
+          collection(db, "Lists"),
+          where("userId", "==", auth.currentUser.uid)
+        ),
+        (querySnapshot) => {
+          setLNotes(
+            querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          );
+        }
+      );
     } catch (e) {
       console.log("Error", e);
     }
@@ -104,6 +136,18 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const Categories = transform(allCategories);
+
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        setModalVisible(!modalVisible);
+        navigation.popToTop();
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
 
   return (
     <View className="flex-1">
@@ -155,8 +199,38 @@ const HomeScreen = ({ navigation }) => {
             keyExtractor={(item) => item.id}
           />
         </View>
+        <View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View className="bg-blue-800 h-1/3 m-5 mt-56 rounded-2xl items-center justify-center">
+              <TouchableOpacity className="self-end mr-5" onPress={() => setModalVisible(false)}>
+                <AntDesign name="closecircle" size={24} color="white" />
+              </TouchableOpacity>
+              <View className="items-center p-5 rounded-2xl shadow-xl w-4/5 mt-6">
+                <Text className="font-bold text-2xl mb-4 text-white">
+                  SIGN OUT
+                </Text>
+                <Pressable
+                  className="bg-white rounded-full w-1/2 items-center"
+                  onPress={handleSignOut}
+                >
+                  <Text className="p-2 text-xl font-bold text-red-500">
+                    Sign Out
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        </View>
         <View className="place-self-end flex-row justify-between items-center mx-8">
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
             <View className="items-center">
               <Entypo name="menu" size={60} color="indigo" />
               <Text className="text-red-500 text-lg">Menu</Text>

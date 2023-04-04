@@ -10,6 +10,7 @@ module.exports = {
     "./components/screens/SingleNoteView.js",
     "./components/screens/ChooseCategory.js",
     "./components/screens/CreateNote.js",
+    "./components/screens/LogInScreen.js",
   ],
   theme: {
     colors: {

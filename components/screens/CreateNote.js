@@ -4,21 +4,23 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
+  Keyboard,
 } from "react-native";
 import { Button, Card, Title, Paragraph } from "react-native-paper";
 import React, { useState } from "react";
-import { collection, addDoc, db, serverTimestamp } from "../../firebase/index";
+import { collection, addDoc, db, serverTimestamp, auth } from "../../firebase/index";
 import { Snackbar } from "react-native-paper";
 
 const CreateNote = ({ navigation, route }) => {
   const { category } = route.params;
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const [visible, setVisible] = React.useState(true);
+  const [visible, setVisible] = useState(false);
   const onToggleSnackBar = () => setVisible(!visible);
 
-  const onDismissSnackBar = () => setVisible(false);
-
+  const onDismissSnackBar = () => {
+    setVisible(false)
+  }
   const handleAddNote = async () => {
     try {
       const docRef = await addDoc(collection(db, `${category}`), {
@@ -26,6 +28,7 @@ const CreateNote = ({ navigation, route }) => {
         note,
         category,
         createdAt: serverTimestamp(),
+        userId : auth.currentUser.uid
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -36,10 +39,10 @@ const CreateNote = ({ navigation, route }) => {
   const handleAddClick = () => {
     title.length > 0 &&
       note.length > 0 &&
-      navigation.navigate("ChooseCategory");
-
-    handleAddNote();
-    setVisible(!visible)
+      handleAddNote();
+    Keyboard.dismiss();
+    setVisible(!visible);
+    setTimeout(() =>  navigation.navigate("ChooseCategory"), 2000)
   };
   return (
     <SafeAreaView className="mt-10">
@@ -67,18 +70,20 @@ const CreateNote = ({ navigation, route }) => {
           <Text className="text-black text-xl">ADD NOTE</Text>
         </Button>
       </TouchableOpacity>
-      <Snackbar
-        visible={visible}
-        onDismiss={onDismissSnackBar}
-        action={{
-          label: "Undo",
-          onPress: () => {
-            // Do something
-          },
-        }}
-      >
-        <Text>New {category} note was added</Text>
-      </Snackbar>
+      <View className="h-80">
+        <Snackbar
+          visible={visible}
+          onDismiss={onDismissSnackBar}
+          // action={{
+          //   label: "Undo",
+          //   onPress: () => {
+          //     // Do something
+          //   },
+          // }}
+        >
+          <Text className="text-white">New {category} note was added</Text>
+        </Snackbar>
+      </View>
     </SafeAreaView>
   );
 };

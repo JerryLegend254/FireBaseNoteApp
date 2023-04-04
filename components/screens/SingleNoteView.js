@@ -18,7 +18,7 @@ const SingleNoteView = ({navigation, route }) => {
   };
   const handleDeleteClick = () => {
     deleteItem()
-    navigation.popToTop();
+    navigation.navigate("HomeScreen");
   }
 
   return (
