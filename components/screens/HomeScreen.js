@@ -152,6 +152,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View className="flex-1">
       <SafeAreaView>
+        <View className="self-end mr-5"><Text className="font-bold text-2xl text-blue-900">Hello, {auth.currentUser?.displayName}</Text></View>
         <View className="flex-row justify-center mt-20">
           <Text className="text-red-500 text-7xl font-bold">My </Text>
           <Text className="text-blue-800 text-7xl font-bold">Notes</Text>

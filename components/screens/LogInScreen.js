@@ -20,23 +20,6 @@ const LogInScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        navigation.pop();
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(errorMessage);
-        // ..
-      });
-    Keyboard.dismiss();
-  };
-
   const handleSignIn = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -83,6 +66,7 @@ const LogInScreen = ({ navigation }) => {
           onChangeText={(text) => setEmail(text)}
           keyboardAppearance="dark"
         />
+
         <TextInput
           className="bg-white border p-4 rounded my-2"
           placeholder="Password"
@@ -92,18 +76,23 @@ const LogInScreen = ({ navigation }) => {
           keyboardAppearance="dark"
         />
       </View>
-      <View className="mt-5 w-1/2">
+      <View className="mt-5 w-5/6 items-center">
         <TouchableOpacity
-          className="bg-blue-700 rounded items-center p-4"
+          className="bg-blue-700 rounded w-3/5 items-center p-4"
           onPress={handleSignIn}
         >
           <Text className="text-white text-sm font-bold">Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-white rounded items-center p-4 mt-4"
-          onPress={handleRegister}
+          className="rounded items-center p-4 mt-4"
+          onPress={() => navigation.navigate("Register")}
         >
-          <Text className="text-blue-700 font-bold text-sm">Register</Text>
+          <View className="flex-row items-center">
+            <Text className="text-blue-700 font-bold text-lg">
+              Don't have an account ?
+            </Text>
+            <Text className="text-red-500 text-lg"> Register</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

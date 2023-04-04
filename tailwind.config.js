@@ -11,6 +11,7 @@ module.exports = {
     "./components/screens/ChooseCategory.js",
     "./components/screens/CreateNote.js",
     "./components/screens/LogInScreen.js",
+    "./components/screens/Register.js",
   ],
   theme: {
     colors: {

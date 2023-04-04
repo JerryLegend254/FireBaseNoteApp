@@ -15,7 +15,7 @@ import {
   deleteDoc,
   doc
 } from "firebase/firestore";
-import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut} from "firebase/auth";
+import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile} from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -32,4 +32,4 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { collection, addDoc, db, getDocs, query, where, onSnapshot, serverTimestamp, deleteDoc, doc, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, signOut};
+export { collection, addDoc, db, getDocs, query, where, onSnapshot, serverTimestamp, deleteDoc, doc, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, signOut, updateProfile};
