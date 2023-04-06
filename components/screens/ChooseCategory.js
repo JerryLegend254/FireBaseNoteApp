@@ -11,7 +11,7 @@ const ChooseCategory = ({ navigation }) => {
     const [value, setValue] = useState("Lists");
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="bg-blue-babyBlue flex-1">
       <View className="m-4 border p-2 rounded-lg mt-10">
         <Text className="self-center text-2xl font-bold">
           Choose Category of the Note

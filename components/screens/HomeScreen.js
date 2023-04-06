@@ -8,7 +8,6 @@ import {
   Modal,
   Pressable,
 } from "react-native";
-// import Categories from "../../assets/model/categoryData";
 import CategoryInfo from "./CategoryInfo";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -150,8 +149,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1">
-      <SafeAreaView>
+    <SafeAreaView className="flex-1 bg-blue-babyBlue">
         <View className="self-end mr-5"><Text className="font-bold text-2xl text-blue-900">Hello, {auth.currentUser?.displayName}</Text></View>
         <View className="flex-row justify-center mt-20">
           <Text className="text-red-500 text-7xl font-bold">My </Text>
@@ -244,7 +242,6 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    </View>
   );
 };
 

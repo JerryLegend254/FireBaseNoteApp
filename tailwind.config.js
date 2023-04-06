@@ -11,7 +11,9 @@ module.exports = {
     "./components/screens/ChooseCategory.js",
     "./components/screens/CreateNote.js",
     "./components/screens/LogInScreen.js",
-    "./components/screens/Register.js",
+    "./components/screens/SplashScreen.js",
+    "./components/screens/LogIn.js",
+    "./components/screens/RegisterScreen.js",
   ],
   theme: {
     colors: {
@@ -20,6 +22,8 @@ module.exports = {
         500: "#ef4444",
       },
       blue: {
+        babyBlue: "#BDE0FE",
+        button: "#0077B6",
         700: "#1d4ed8",
         800: "#1e40af",
         900: "#1e3a8a",
